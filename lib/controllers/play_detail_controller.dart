@@ -1,35 +1,70 @@
+import 'dart:convert';
+
+import 'package:calculate_score/components/commons.dart';
 import 'package:calculate_score/controllers/app_controller.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:calculate_score/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../models/player_entity.dart';
-import '../models/score_entity.dart';
+import '../models/round_enitty.dart';
 
 class PlayDetailController extends GetxController {
   final appController = Get.find<AppController>();
+  final dbHelper = DatabaseHelper();
+  late Database db;
+  RxBool isLoading = false.obs;
 
   RxString winner = ''.obs;
   int numericalOrder = 1;
   TextEditingController noteController = TextEditingController();
 
-  RxList<ScoreEntity> listScore = <ScoreEntity>[].obs;
+  RxList<RoundEntity> listRounds = <RoundEntity>[].obs;
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     // TODO: implement onInit
     super.onInit();
-
-    String date = DateFormat('dd-MM-yyyy').format(DateTime.now());
-    String hours = DateFormat('HH').format(DateTime.now());
-
     for (int i = 0; i < appController.quantity.value; ++i) {
       appController.players[i].score = List.generate(appController.quantity.value, (index) => 0);
     }
+
+    db = await dbHelper.database();
+    var arguments = Get.arguments;
+    if (arguments != null && arguments is Map && arguments.containsKey('players')) {
+      appController.resetData();
+      await readFromDatabase();
+    }
+    // isLoading.value = false;
   }
 
-  void onSavePressed(context) {
+  Future<void> readFromDatabase() async {
+    List<Map<String, Object?>> records =
+        await db.rawQuery('SELECT * FROM $roundsTable WHERE gameId = ?', [appController.gameId.value]);
+    int length = records.length;
+    for (int i = 0; i < length; ++i) {
+      RoundEntity round = RoundEntity.fromJson((records[i]));
+      listRounds.add(round);
+    }
+
+    if (listRounds.isNotEmpty) {
+      int length = listRounds.length;
+      int numberOfPlayers = listRounds[0].data!.length;
+      appController.quantity.value = numberOfPlayers;
+      numericalOrder = length + 1;
+      List<String> listPlayerName = Get.arguments['players'];
+      List<List<int>> lastScore = Get.arguments['lastScore'];
+      for (int i = 0; i < numberOfPlayers; ++i) {
+        appController.players[i].name = listPlayerName[i];
+        appController.players[i].score = List.from(lastScore[i]);
+      }
+    }
+  }
+
+  Future<void> onSavePressed(context) async {
+    final timestamp = DateTime.now().toIso8601String();
     final indexWinner = appController.players.indexOf(Player(name: winner.value, isWinner: true));
     final scoreData = <int>[];
 
@@ -47,16 +82,21 @@ class PlayDetailController extends GetxController {
       }
     }
 
-    listScore.add(ScoreEntity(
-      numericalOrder: numericalOrder,
+    final score = RoundEntity(
+      gameId: appController.gameId.value,
+      numericalOrder: numericalOrder.toString(),
       timeNow: DateFormat('HH:mm').format(DateTime.now()),
       data: scoreData,
       note: noteController.text,
-    ));
+    );
 
-    for (int i = 0; i < appController.quantity.value; ++i) {
-      print(appController.players[i].score);
-    }
+    String lastScore = jsonEncode(List.from(appController.players.where((element) => element.score != null).toList())
+        .map((e) => e.score)
+        .toList());
+
+    listRounds.add(score);
+    await dbHelper.addRound(appController.gameId.value, score.toJson());
+    await dbHelper.updateGame(appController.gameId.value, "--", lastScore);
 
     numericalOrder++;
     Get.back();

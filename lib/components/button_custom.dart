@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'commons.dart';
+
 class CButton extends StatelessWidget {
   CButton(
       {super.key,
       required this.text,
       required this.iconData,
       this.textColor = Colors.white,
-      this.buttonColor = Colors.black,
+      this.buttonColor = blackColor,
       this.onPressed});
 
   final String text;

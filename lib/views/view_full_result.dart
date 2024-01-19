@@ -21,8 +21,15 @@ class ViewFullResult extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Kết quả", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
+        backgroundColor: blackColor,
         iconTheme: const IconThemeData(color: Colors.white),
+        // actions: [
+        //   IconButton(
+        //       onPressed: () {
+        //         controller.initialData();
+        //       },
+        //       icon: Icon(Icons.refresh)),
+        // ],
       ),
       body: Obx(() {
         controller.initialData();
@@ -66,7 +73,7 @@ class ViewFullResult extends StatelessWidget {
               for (int i = 0; i < controller.quantity; ++i)
                 Row(
                   children: [
-                    for (int j = 0; j <= controller.quantity; ++j)
+                    for (int j = 0; j < controller.quantity + 1; ++j)
                       j == 0
                           ? CellTable(
                               height: width / (controller.quantity + 1),
@@ -92,20 +99,27 @@ class ViewFullResult extends StatelessWidget {
       builder: (context) => AlertDialog(
         content: SizedBox(
           width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              MarqueeWidget(
-                child: Text(
-                  appController.players[index].name ?? '',
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MarqueeWidget(
+                  child: Text(
+                    appController.players[index].name ?? '',
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(width: double.infinity, child: buildPlayerAndDebtAmount(appController, index)),
+                const SizedBox(height: 10),
+                Text(
+                  'Tổng: ${controller.summarizes[index]}',
                   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
                 ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(width: double.infinity, child: buildPlayerAndDebtAmount(appController, index)),
-            ],
+              ],
+            ),
           ),
         ),
       ),

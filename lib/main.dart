@@ -1,5 +1,6 @@
 import 'package:calculate_score/app_view.dart';
 import 'package:calculate_score/controllers/app_controller.dart';
+import 'package:calculate_score/controllers/history_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,7 +22,15 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Mulish',
       ),
       home: const MyAppView(),
-      initialBinding: BindingsBuilder.put(() => AppController(), permanent: true),
+      initialBinding: BindingsBuilder(() {
+        Get.put(AppController());
+        Get.put(HistoryController());
+      }),
+
+      // BindingsBuilder.put(() {
+      //   Get.put(AppController());
+      //   Get.put(HistoryController());
+      // }, permanent: true),
     );
   }
 }

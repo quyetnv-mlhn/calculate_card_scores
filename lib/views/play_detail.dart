@@ -3,7 +3,6 @@ import 'package:calculate_score/components/commons.dart';
 import 'package:calculate_score/components/marqee_widget.dart';
 import 'package:calculate_score/controllers/app_controller.dart';
 import 'package:calculate_score/controllers/result_controller.dart';
-import 'package:calculate_score/models/score_entity.dart';
 import 'package:calculate_score/views/view_full_result.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 import '../controllers/play_detail_controller.dart';
+import '../models/round_enitty.dart';
 
 class PlayDetail extends StatelessWidget {
   const PlayDetail({Key? key, required this.controller}) : super(key: key);
@@ -25,7 +25,7 @@ class PlayDetail extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Chi tiết trò chơi", style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.black,
+          backgroundColor: blackColor,
           iconTheme: const IconThemeData(color: Colors.white),
           actions: [
             Padding(
@@ -44,26 +44,28 @@ class PlayDetail extends StatelessWidget {
           onPressed: () => _showWinnerDialog(context, appController),
           child: const Icon(Icons.add),
         ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: paddingMain),
-          child: Obx(() {
-            return SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  buildPlayerInfo(appController),
-                  ...List.generate(
-                    controller.listScore.length,
-                    (index) => buildRowScore(
-                      appController,
-                      controller.listScore[controller.listScore.length - 1 - index],
+        body: controller.isLoading.value
+            ? const Center(child: CupertinoActivityIndicator())
+            : Padding(
+                padding: const EdgeInsets.only(top: paddingMain),
+                child: Obx(() {
+                  return SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        buildPlayerInfo(appController),
+                        ...List.generate(
+                          controller.listRounds.length,
+                          (index) => buildRowScore(
+                            appController,
+                            controller.listRounds[controller.listRounds.length - 1 - index],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  );
+                }),
               ),
-            );
-          }),
-        ),
       ),
     );
   }
@@ -142,8 +144,8 @@ class PlayDetail extends StatelessWidget {
           CButton(
             text: 'LƯU',
             iconData: Icons.save,
-            buttonColor: CupertinoColors.systemYellow,
-            textColor: Colors.black,
+            buttonColor: primaryColor,
+            textColor: blackColor,
             onPressed: () => controller.onSavePressed(context),
           ),
         ],
@@ -235,7 +237,7 @@ class PlayDetail extends StatelessWidget {
         width: buttonRadius,
         height: buttonRadius,
         margin: const EdgeInsets.symmetric(horizontal: 5),
-        decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+        decoration: const BoxDecoration(shape: BoxShape.circle, color: blackColor),
         child: Icon(
           iconData,
           color: Colors.white,
@@ -279,7 +281,7 @@ class PlayDetail extends StatelessWidget {
     );
   }
 
-  Widget buildRowScore(AppController appController, ScoreEntity scoreEntity) {
+  Widget buildRowScore(AppController appController, RoundEntity roundEntity) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -290,13 +292,13 @@ class PlayDetail extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 5),
               margin: const EdgeInsets.only(bottom: 5),
               color: Colors.grey,
-              child: Text('${scoreEntity.numericalOrder}'),
+              child: Text('${roundEntity.numericalOrder}'),
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               margin: const EdgeInsets.only(bottom: 5),
               color: Colors.grey,
-              child: Text('${scoreEntity.timeNow}'),
+              child: Text('${roundEntity.timeNow}'),
             )
           ],
         ),
@@ -307,10 +309,10 @@ class PlayDetail extends StatelessWidget {
               appController.quantity.value,
               (index) => Expanded(
                 child: Center(
-                  child: scoreEntity.data?[index] == 0
+                  child: roundEntity.data?[index] == 0
                       ? SvgPicture.asset('assets/images/crown.svg', width: fontSizeMain * 2, height: fontSizeMain * 2)
                       : Text(
-                          '${scoreEntity.data?[index] ?? ''}',
+                          '${roundEntity.data?[index] ?? ''}',
                           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                         ),
                 ),
@@ -319,11 +321,11 @@ class PlayDetail extends StatelessWidget {
             const SizedBox(width: paddingMain),
           ],
         ),
-        if (scoreEntity.note != null && scoreEntity.note != '')
+        if (roundEntity.note != null && roundEntity.note != '')
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text('${scoreEntity.note}'),
+              Text('${roundEntity.note}'),
               const Icon(Icons.format_quote),
             ],
           ),

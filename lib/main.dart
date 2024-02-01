@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
       home: const MyAppView(),
       initialBinding: BindingsBuilder(() {
         Get.put(AppController());
-        Get.put(HistoryController());
       }),
 
       // BindingsBuilder.put(() {

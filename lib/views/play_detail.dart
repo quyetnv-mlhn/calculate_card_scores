@@ -44,28 +44,37 @@ class PlayDetail extends StatelessWidget {
           onPressed: () => _showWinnerDialog(context, appController),
           child: const Icon(Icons.add),
         ),
-        body: controller.isLoading.value
-            ? const Center(child: CupertinoActivityIndicator())
-            : Padding(
-                padding: const EdgeInsets.only(top: paddingMain),
-                child: Obx(() {
-                  return SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        buildPlayerInfo(appController),
-                        ...List.generate(
-                          controller.listRounds.length,
-                          (index) => buildRowScore(
-                            appController,
-                            controller.listRounds[controller.listRounds.length - 1 - index],
+        body: WillPopScope(
+          onWillPop: () async {
+            for (var element in appController.nameController) {
+              element.clear();
+            }
+            Get.delete<PlayDetailController>();
+            return true;
+          },
+          child: Obx(() => controller.isLoading.value
+              ? const Center(child: CupertinoActivityIndicator())
+              : Padding(
+                  padding: const EdgeInsets.only(top: paddingMain),
+                  child: Obx(() {
+                    return SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          buildPlayerInfo(appController),
+                          ...List.generate(
+                            controller.listRounds.length,
+                            (index) => buildRowScore(
+                              appController,
+                              controller.listRounds[controller.listRounds.length - 1 - index],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
+                        ],
+                      ),
+                    );
+                  }),
+                )),
+        ),
       ),
     );
   }
@@ -96,7 +105,7 @@ class PlayDetail extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(12.0)),
         ),
         title: const Text(
-          'Ai là người thắng nào :>',
+          'Ai là người thắng?',
           style: TextStyle(fontSize: 20),
           textAlign: TextAlign.center,
         ),
@@ -188,7 +197,10 @@ class PlayDetail extends StatelessWidget {
                         textAlign: TextAlign.center,
                         textAlignVertical: TextAlignVertical.center,
                         style: const TextStyle(fontSize: 20),
-                        decoration: const InputDecoration(contentPadding: EdgeInsets.all(0), hintText: '0'),
+                        decoration: InputDecoration(
+                            contentPadding: EdgeInsets.all(0),
+                            hintText: '0',
+                            hintStyle: TextStyle(color: Colors.grey.shade400)),
                         keyboardType: TextInputType.number,
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       ),

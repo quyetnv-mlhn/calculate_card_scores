@@ -4,11 +4,12 @@
 
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
 GameEntity gameEntityFromJson(String str) => GameEntity.fromJson(json.decode(str));
 
-class GameEntity {
+class GameEntity extends Equatable {
   int? gameId;
   String? timestamp;
   List<String>? players;
@@ -36,7 +37,8 @@ class GameEntity {
     }
     return GameEntity(
       gameId: json["gameId"],
-      timestamp: DateFormat('dd/MM - HH:mm').format(DateTime.parse(json["timestamp"])),
+      timestamp: json["timestamp"],
+      // DateFormat('dd/MM - HH:mm').format(DateTime.parse()),
       players: json["players"] == null
           ? []
           : List<String?>.from(jsonDecode(json["players"])).where((element) => element != null).cast<String>().toList(),
@@ -44,6 +46,10 @@ class GameEntity {
       lastScore: json["lastScore"] == null ? [[]] : lastScore,
     );
   }
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [gameId, timestamp, players, winner, lastScore];
 
 // Map<String, dynamic> toJson() => {
 //       "gameId": gameId,

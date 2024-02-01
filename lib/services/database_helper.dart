@@ -65,6 +65,11 @@ class DatabaseHelper {
         [winner, timestamp, lastScore, gameId]);
   }
 
+  Future<void> deleteGame(int gameId) async {
+    await _database!.delete(gamesTable, where: 'gameId = ?', whereArgs: [gameId]);
+    await _database!.delete(roundsTable, where: 'gameId = ?', whereArgs: [gameId]);
+  }
+
   Future<void> addRound(int gameId, Map<String, dynamic> playerScores) async {
     final roundData = <String, dynamic>{
       'gameId': gameId,

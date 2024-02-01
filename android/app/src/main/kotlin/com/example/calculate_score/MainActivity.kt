@@ -1,4 +1,4 @@
-package com.example.calculate_score
+package quyetnv.calculate_score
 
 import io.flutter.embedding.android.FlutterActivity
 

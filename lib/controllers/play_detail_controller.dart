@@ -15,7 +15,7 @@ class PlayDetailController extends GetxController {
   final appController = Get.find<AppController>();
   final dbHelper = DatabaseHelper();
   late Database db;
-  RxBool isLoading = false.obs;
+  RxBool isLoading = true.obs;
 
   RxString winner = ''.obs;
   int numericalOrder = 1;
@@ -33,16 +33,22 @@ class PlayDetailController extends GetxController {
 
     db = await dbHelper.database();
     var arguments = Get.arguments;
-    if (arguments != null && arguments is Map && arguments.containsKey('players')) {
+    print(arguments);
+    if (arguments != null &&
+        arguments is Map &&
+        arguments.containsKey('players') &&
+        arguments.containsKey('lastScore')) {
       appController.resetData();
       await readFromDatabase();
     }
-    // isLoading.value = false;
+    isLoading.value = false;
   }
 
   Future<void> readFromDatabase() async {
+    print("gameId: ${appController.gameId.value}");
     List<Map<String, Object?>> records =
         await db.rawQuery('SELECT * FROM $roundsTable WHERE gameId = ?', [appController.gameId.value]);
+    print(records);
     int length = records.length;
     for (int i = 0; i < length; ++i) {
       RoundEntity round = RoundEntity.fromJson((records[i]));
@@ -50,6 +56,7 @@ class PlayDetailController extends GetxController {
     }
 
     if (listRounds.isNotEmpty) {
+      print("Get.arguments['players']: ${Get.arguments['players']}");
       int length = listRounds.length;
       int numberOfPlayers = listRounds[0].data!.length;
       appController.quantity.value = numberOfPlayers;

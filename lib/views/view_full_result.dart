@@ -107,7 +107,7 @@ class ViewFullResult extends StatelessWidget {
               children: [
                 MarqueeWidget(
                   child: Text(
-                    appController.players[index].name ?? '',
+                    '${appController.players[index].name ?? ''} ăn',
                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
                   ),
                 ),
@@ -115,7 +115,7 @@ class ViewFullResult extends StatelessWidget {
                 SizedBox(width: double.infinity, child: buildPlayerAndDebtAmount(appController, index)),
                 const SizedBox(height: 10),
                 Text(
-                  'Tổng: ${controller.summarizes[index]}',
+                  'Tổng ${controller.summarizes[index] >= 0 ? 'lãi' : 'lỗ'}: ${controller.summarizes[index]}',
                   style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
                 ),
               ],

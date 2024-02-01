@@ -35,14 +35,39 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  flutter_bloc: ^8.1.3
   get: ^4.6.6
-  google_fonts: ^6.1.0
   intl: ^0.19.0
   flutter_svg: ^2.0.9
   equatable: ^2.0.5
-  table_sticky_headers: ^2.0.5
   sqflite: ^2.3.0
+  grouped_list: ^5.1.2
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.7
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/images/card-game.png
+  android_gravity: center
+  background_image: "assets/images/card-game.png"
+  background_image_dark: "assets/images/card-game.png"
+  fullscreen: true
+  android: true
+  ios: true
+  web: false
+  color_dark_android: "#FFFFFF"
+  color_dark_ios: "#FFFFFF"
+  ios_content_mode: scaleAspectFit
+  android_12:
+    color: "#FFFFFF"
+    image: assets/images/card-game.png
+    color_dark: "#FFFFFF"
+    color_dark_android: "#FFFFFF"
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/card-game.png"
+  remove_alpha_ios: true
 
 dev_dependencies:
   flutter_test:

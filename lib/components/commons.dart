@@ -2,16 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-textStyle({
-  FontWeight fontWeight = FontWeight.w400,
-  double fontSize = 15,
-}) =>
-    GoogleFonts.roboto(
-      fontWeight: fontWeight,
-      fontSize: fontSize,
-    );
 
 const buttonRadius = 30.0;
 

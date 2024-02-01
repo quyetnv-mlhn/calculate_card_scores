@@ -23,6 +23,7 @@ class AppController extends GetxController {
   Future<void> onInit() async {
     // TODO: implement onInit
     super.onInit();
+    db = await dbHelper.database();
   }
 
   @override
@@ -38,13 +39,12 @@ class AppController extends GetxController {
   }
 
   void resetData() {
-    for (int i = 0 ; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) {
       players[i] = Player();
       playersScore[i].clear();
       nameController[i].clear();
     }
   }
-
 
   Future<void> startGame({bool quickStart = false}) async {
     if (!quickStart && !isPlayerValid) {
@@ -63,7 +63,7 @@ class AppController extends GetxController {
     }
 
     gameId.value = await dbHelper.addGame(players: jsonEncode(players.map((player) => player.name).toList()));
-    Get.off(() => PlayDetail(controller: Get.put(PlayDetailController())));
+    Get.to(() => PlayDetail(controller: Get.put(PlayDetailController())));
   }
 
   get isPlayerValid {
